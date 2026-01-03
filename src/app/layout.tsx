@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   description: "Secured by Crypto, Powered by AI.",
 };
 
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { UIProvider } from "@/components/providers/UIProvider";
+import { GlobalHeader } from "@/components/global-header";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,16 +32,22 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <UIProvider>
+              <GlobalHeader />
+              {children}
+              <Toaster />
+            </UIProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -5,15 +5,9 @@ import { redirect } from "next/navigation";
 import { users } from "@/drizzle/schema";
 import { getDrizzleSupabaseAdminClient } from "@/lib/drizzle-client";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
-import {
-  LoginFormData,
-  SignupFormData,
-  loginSchema,
-  signupSchema,
-} from "@/app/(auth)/lib/auth.schemas";
-import { enhanceAction } from "@/lib/server-utils";
+import { LoginFormData, SignupFormData } from "@/app/(auth)/lib/auth.schemas";
 
-export const login = enhanceAction(loginSchema, async (data) => {
+export async function login(data: LoginFormData): Promise<{ error?: string }> {
   const supabase = await getSupabaseServerClient();
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -22,14 +16,16 @@ export const login = enhanceAction(loginSchema, async (data) => {
   });
 
   if (error) {
-    throw new Error("Invalid credentials");
+    return { error: "Invalid credentials" };
   }
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
-});
+}
 
-export const signup = enhanceAction(signupSchema, async (data) => {
+export async function signup(
+  data: SignupFormData
+): Promise<{ error?: string }> {
   const supabase = await getSupabaseServerClient();
 
   const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -38,11 +34,11 @@ export const signup = enhanceAction(signupSchema, async (data) => {
   });
 
   if (authError) {
-    throw new Error(authError.message);
+    return { error: authError.message };
   }
 
   if (!authData.user) {
-    throw new Error("Something went wrong");
+    return { error: "Something went wrong" };
   }
 
   try {
@@ -56,12 +52,12 @@ export const signup = enhanceAction(signupSchema, async (data) => {
     });
   } catch (dbError) {
     console.error("DB Error:", dbError);
-    throw new Error("Failed to create profile");
+    return { error: "Failed to create profile" };
   }
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
-});
+}
 
 export async function logout() {
   const supabase = await getSupabaseServerClient();
