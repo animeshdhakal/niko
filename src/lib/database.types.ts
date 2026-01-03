@@ -34,7 +34,172 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accounts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string | null
+          national_id_no: string | null
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          name?: string | null
+          national_id_no?: string | null
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string | null
+          national_id_no?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+        }
+        Relationships: []
+      }
+      appointments: {
+        Row: {
+          created_at: string
+          date: string
+          doctor_id: string
+          id: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          doctor_id: string
+          id?: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          doctor_id?: string
+          id?: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctors: {
+        Row: {
+          created_at: string
+          daily_capacity: number
+          hospital_department_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          daily_capacity?: number
+          hospital_department_id: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          daily_capacity?: number
+          hospital_department_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctors_hospital_department_id_fkey"
+            columns: ["hospital_department_id"]
+            isOneToOne: false
+            referencedRelation: "hospital_departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hospital_departments: {
+        Row: {
+          hospital_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          hospital_id: string
+          id?: string
+          name: string
+        }
+        Update: {
+          hospital_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hospital_departments_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hospitals: {
+        Row: {
+          city: string | null
+          contact_number: string
+          created_at: string
+          district: string | null
+          email: string
+          id: string
+          latitude: number
+          longitude: number
+          name: string
+          province: string | null
+        }
+        Insert: {
+          city?: string | null
+          contact_number: string
+          created_at?: string
+          district?: string | null
+          email: string
+          id?: string
+          latitude: number
+          longitude: number
+          name: string
+          province?: string | null
+        }
+        Update: {
+          city?: string | null
+          contact_number?: string
+          created_at?: string
+          district?: string | null
+          email?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          name?: string
+          province?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -43,7 +208,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      appointment_status:
+        | "pending"
+        | "confirmed"
+        | "cancelled"
+        | "completed"
+        | "deleted"
+      user_role: "citizen" | "provider" | "ministry"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -173,7 +344,16 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      appointment_status: [
+        "pending",
+        "confirmed",
+        "cancelled",
+        "completed",
+        "deleted",
+      ],
+      user_role: ["citizen", "provider", "ministry"],
+    },
   },
 } as const
 

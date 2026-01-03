@@ -2,8 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { users } from "@/drizzle/schema";
-import { getDrizzleSupabaseAdminClient } from "@/lib/drizzle-client";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 import { LoginFormData, SignupFormData } from "@/app/(auth)/lib/auth.schemas";
 
@@ -33,6 +32,8 @@ export async function signup(
     password: data.password,
   });
 
+  console.log("authData", authError);
+
   if (authError) {
     return { error: authError.message };
   }
@@ -42,14 +43,20 @@ export async function signup(
   }
 
   try {
-    const db = getDrizzleSupabaseAdminClient();
+    const adminClient = getSupabaseAdminClient();
 
-    await db.insert(users).values({
+    const { error: dbError } = await adminClient.from("accounts").insert({
       id: authData.user.id,
       email: data.email,
       name: data.name,
+      national_id_no: data.nationalIdNo,
       role: data.role,
     });
+
+    if (dbError) {
+      console.error("DB Error:", dbError);
+      return { error: "Failed to create profile" };
+    }
   } catch (dbError) {
     console.error("DB Error:", dbError);
     return { error: "Failed to create profile" };

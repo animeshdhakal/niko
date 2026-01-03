@@ -43,6 +43,7 @@ export default function SignupPage() {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
+      nationalIdNo: "",
       email: "",
       password: "",
       role: undefined,
@@ -95,6 +96,20 @@ export default function SignupPage() {
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter your full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="nationalIdNo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>National ID Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your National ID Number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

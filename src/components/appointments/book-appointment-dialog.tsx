@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2, Check, ChevronsUpDown, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { bookAppointment, getDepartments, getDoctorsByDepartment, getAllHospitalsForBooking } from "@/app/(dashboard)/appointments/actions";
+import { bookAppointment, getDepartments, getDoctorsByDepartment, getAllHospitalsForBooking } from "@/app/dashboard/appointments/actions";
 import {
   Command,
   CommandEmpty,
@@ -54,7 +54,7 @@ export function BookAppointmentDialog({
   const [hospitalOpen, setHospitalOpen] = useState(false);
 
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
-  const [doctors, setDoctors] = useState<{ id: string; name: string; dailyCapacity: number }[]>([]);
+  const [doctors, setDoctors] = useState<{ id: string; name: string; daily_capacity: number }[]>([]);
 
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
@@ -227,7 +227,7 @@ export function BookAppointmentDialog({
               <SelectContent>
                 {doctors.map((doctor) => (
                   <SelectItem key={doctor.id} value={doctor.id}>
-                    {doctor.name} (Capacity: {doctor.dailyCapacity}/day)
+                    {doctor.name} (Capacity: {doctor.daily_capacity}/day)
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -255,7 +255,11 @@ export function BookAppointmentDialog({
                   selected={date}
                   onSelect={setDate}
                   initialFocus
-                  disabled={(date) => date < new Date()}
+                  disabled={(date) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return date < today;
+                  }}
                 />
               </PopoverContent>
             </Popover>

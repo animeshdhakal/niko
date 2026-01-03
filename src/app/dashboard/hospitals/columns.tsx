@@ -6,13 +6,13 @@ export type Hospital = {
   id: string;
   name: string;
   email: string;
-  contactNumber: string;
+  contact_number: string;
   latitude: number;
   longitude: number;
   province: string | null;
   district: string | null;
   city: string | null;
-  createdAt: Date;
+  created_at: string;
 };
 
 export const columns: ColumnDef<Hospital>[] = [
@@ -33,7 +33,7 @@ export const columns: ColumnDef<Hospital>[] = [
     header: "Province",
   },
   {
-    accessorKey: "contactNumber",
+    accessorKey: "contact_number",
     header: "Contact",
   },
   {

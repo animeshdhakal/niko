@@ -3,7 +3,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Hospital } from "@/drizzle/types";
+import { Hospital } from "@/app/dashboard/hospitals/columns";
 import { useTheme } from "next-themes";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Hospital as HospitalIcon, MapPin } from "lucide-react";
@@ -16,9 +16,6 @@ interface HospitalMapProps {
 
 // Custom hook to fix leaflet icon issues and create dynamic icons
 const useHospitalIcon = () => {
-  // const { theme } = useTheme(); // Removed unused variable but keeping hook structure for future
-
-
   const createIcon = (color: string) => {
     const iconHtml = renderToStaticMarkup(
       <div className="relative flex items-center justify-center w-10 h-10">
@@ -96,9 +93,9 @@ function HospitalMapContent({ hospitals }: HospitalMapProps) {
                     </span>
                   </div>
 
-                  {hospital.contactNumber && (
+                  {hospital.contact_number && (
                     <div className="px-2 py-1.5 rounded-md bg-sky-500/10 text-sky-700 dark:text-sky-300 text-xs font-medium text-center">
-                      {hospital.contactNumber}
+                      {hospital.contact_number}
                     </div>
                   )}
 

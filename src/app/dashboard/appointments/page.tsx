@@ -1,4 +1,4 @@
-import { getUserAppointments } from "@/app/(dashboard)/appointments/actions";
+import { getUserAppointments } from "@/app/dashboard/appointments/actions";
 import { BookAppointmentDialog } from "@/components/appointments/book-appointment-dialog";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";

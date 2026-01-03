@@ -14,9 +14,11 @@ export function GlobalHeader() {
     const { isStickyNav, toggleStickyNav } = useUI();
     const pathname = usePathname();
 
-    // Hide header on login and signup pages
+    // Hide header on login, signup, and dashboard pages
     const isAuthPage = pathname === "/login" || pathname === "/signup";
-    if (isAuthPage) return null;
+    const isDashboardPage = pathname?.startsWith("/dashboard") || pathname?.startsWith("/appointments") || pathname?.startsWith("/hospitals") || pathname?.startsWith("/settings");
+
+    if (isAuthPage || isDashboardPage) return null;
 
     return (
         <>

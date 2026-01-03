@@ -1,9 +1,6 @@
-import { logout } from "../lib/auth.actions";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
 import { redirect } from "next/navigation";
-import { users } from "@/drizzle/schema";
-import { getDrizzleSupabaseAdminClient } from "@/lib/drizzle-client";
-import { eq } from "drizzle-orm";
+import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export default async function DashboardPage() {
   const supabase = await getSupabaseServerClient();
@@ -16,9 +13,13 @@ export default async function DashboardPage() {
   // Fetch user profile from DB
   let userProfile = null;
   try {
-    const db = getDrizzleSupabaseAdminClient();
-    const result = await db.select().from(users).where(eq(users.id, user.id));
-    userProfile = result[0];
+    const adminClient = getSupabaseAdminClient();
+    const { data } = await adminClient
+      .from("accounts")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    userProfile = data;
   } catch (e) {
     console.error("Failed to fetch profile", e);
   }

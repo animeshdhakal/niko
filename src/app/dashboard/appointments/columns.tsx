@@ -6,7 +6,7 @@ import { format } from "date-fns";
 
 export type Appointment = {
   id: string;
-  date: Date;
+  date: string;
   status: "pending" | "confirmed" | "cancelled" | "completed" | "deleted";
   doctor: {
     name: string;
@@ -54,7 +54,7 @@ export const columns: ColumnDef<Appointment>[] = [
               : "secondary"
           }
         >
-          {status}
+          {status.toUpperCase()}
         </Badge>
       );
     },

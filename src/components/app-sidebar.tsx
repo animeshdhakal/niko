@@ -24,14 +24,14 @@ export function AppSidebar({ userRole }: { userRole: string }) {
     },
     {
       title: "Appointments",
-      url: "/appointments",
+      url: "/dashboard/appointments",
       icon: CalendarDays,
     },
     ...(userRole === "ministry"
       ? [
           {
             title: "Hospitals",
-            url: "/hospitals",
+            url: "/dashboard/hospitals",
             icon: Building2,
           },
         ]
