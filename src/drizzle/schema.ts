@@ -5,6 +5,7 @@ import {
   uuid,
   pgEnum,
   pgPolicy,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -35,6 +36,51 @@ export const users = pgTable(
       for: "update",
       to: ["public"],
       using: sql`auth.uid() = ${table.id}`,
+    }),
+  ]
+);
+
+export const hospitals = pgTable(
+  "hospitals",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    latitude: doublePrecision("latitude").notNull(),
+    longitude: doublePrecision("longitude").notNull(),
+    contactNumber: text("contact_number").notNull(),
+    email: text("email").notNull(),
+    province: text("province"),
+    district: text("district"),
+    city: text("city"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  () => [
+    pgPolicy("ministry_manage_hospitals", {
+      as: "permissive",
+      for: "all",
+      to: ["public"],
+      using: sql`exists (select 1 from public.users where id = auth.uid() and role = 'ministry')`,
+      withCheck: sql`exists (select 1 from public.users where id = auth.uid() and role = 'ministry')`,
+    }),
+  ]
+);
+
+export const hospitalDepartments = pgTable(
+  "hospital_departments",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    hospitalId: uuid("hospital_id")
+      .notNull()
+      .references(() => hospitals.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+  },
+  () => [
+    pgPolicy("ministry_manage_departments", {
+      as: "permissive",
+      for: "all",
+      to: ["public"],
+      using: sql`exists (select 1 from public.users where id = auth.uid() and role = 'ministry')`,
+      withCheck: sql`exists (select 1 from public.users where id = auth.uid() and role = 'ministry')`,
     }),
   ]
 );

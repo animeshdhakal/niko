@@ -5,9 +5,15 @@ import { redirect } from "next/navigation";
 import { users } from "@/drizzle/schema";
 import { getDrizzleSupabaseAdminClient } from "@/lib/drizzle-client";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
-import { LoginFormData, SignupFormData } from "@/app/(auth)/lib/auth.schemas";
+import {
+  LoginFormData,
+  SignupFormData,
+  loginSchema,
+  signupSchema,
+} from "@/app/(auth)/lib/auth.schemas";
+import { enhanceAction } from "@/lib/server-utils";
 
-export async function login(data: LoginFormData): Promise<{ error?: string }> {
+export const login = enhanceAction(loginSchema, async (data) => {
   const supabase = await getSupabaseServerClient();
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -16,16 +22,14 @@ export async function login(data: LoginFormData): Promise<{ error?: string }> {
   });
 
   if (error) {
-    return { error: "Invalid credentials" };
+    throw new Error("Invalid credentials");
   }
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
-}
+});
 
-export async function signup(
-  data: SignupFormData
-): Promise<{ error?: string }> {
+export const signup = enhanceAction(signupSchema, async (data) => {
   const supabase = await getSupabaseServerClient();
 
   const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -34,11 +38,11 @@ export async function signup(
   });
 
   if (authError) {
-    return { error: authError.message };
+    throw new Error(authError.message);
   }
 
   if (!authData.user) {
-    return { error: "Something went wrong" };
+    throw new Error("Something went wrong");
   }
 
   try {
@@ -52,12 +56,12 @@ export async function signup(
     });
   } catch (dbError) {
     console.error("DB Error:", dbError);
-    return { error: "Failed to create profile" };
+    throw new Error("Failed to create profile");
   }
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
-}
+});
 
 export async function logout() {
   const supabase = await getSupabaseServerClient();
