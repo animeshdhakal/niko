@@ -54,9 +54,10 @@ export async function bookAppointment(
 
   // Get doctor
   const { data: doctor, error: doctorError } = await supabase
-    .from("doctors")
+    .from("accounts")
     .select("*")
     .eq("id", doctorId)
+    .eq("role", "doctor")
     .single();
 
   if (doctorError || !doctor) {
@@ -65,7 +66,7 @@ export async function bookAppointment(
 
   const currentCount = existingCount || 0;
 
-  if (currentCount >= doctor.daily_capacity) {
+  if (currentCount >= 10) {
     throw new Error("Doctor is fully booked for this date");
   }
 
@@ -89,8 +90,9 @@ export async function getDoctorsByDepartment(departmentId: string) {
   const supabase = await getSupabaseServerClient();
 
   const { data, error } = await supabase
-    .from("doctors")
+    .from("accounts")
     .select("*")
+    .eq("role", "doctor")
     .eq("hospital_department_id", departmentId);
 
   if (error) {
@@ -132,7 +134,7 @@ export async function getUserAppointments(
     .select(
       `
       *,
-      doctor:doctors(
+      doctor:accounts!appointments_doctor_id_fkey(
         *,
         department:hospital_departments(
           *,
@@ -262,4 +264,72 @@ export async function getAllHospitalsForBooking() {
   }
 
   return data || [];
+}
+
+export async function getAppointmentDetails(appointmentId: string) {
+  const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
+  // Get appointment with doctor info
+  const { data: appointment, error: appointmentError } = await supabase
+    .from("appointments")
+    .select(
+      `
+      *,
+      doctor:accounts!appointments_doctor_id_fkey(
+        *,
+        department:hospital_departments(
+          *,
+          hospital:hospitals(*)
+        )
+      )
+    `
+    )
+    .eq("id", appointmentId)
+    .single();
+
+  if (appointmentError) {
+    throw new Error(appointmentError.message);
+  }
+
+  // Get prescriptions
+  const { data: prescriptions, error: prescriptionsError } = await supabase
+    .from("prescriptions")
+    .select("*")
+    .eq("appointment_id", appointmentId)
+    .order("created_at", { ascending: false });
+
+  if (prescriptionsError) {
+    throw new Error(prescriptionsError.message);
+  }
+
+  // Get lab reports with items and creator/checker info
+  const { data: labReports, error: labReportsError } = await supabase
+    .from("lab_reports")
+    .select(
+      `
+      *,
+      created_by_account:accounts!lab_reports_created_by_fkey(id, name),
+      checked_by_account:accounts!lab_reports_checked_by_fkey(id, name),
+      items:lab_report_items(*)
+    `
+    )
+    .eq("appointment_id", appointmentId)
+    .order("report_date", { ascending: false });
+
+  if (labReportsError) {
+    throw new Error(labReportsError.message);
+  }
+
+  return {
+    appointment,
+    prescriptions: prescriptions || [],
+    labReports: labReports || [],
+  };
 }

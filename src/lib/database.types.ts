@@ -38,6 +38,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          hospital_department_id: string | null
           id: string
           name: string | null
           national_id_no: string | null
@@ -46,6 +47,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          hospital_department_id?: string | null
           id: string
           name?: string | null
           national_id_no?: string | null
@@ -54,44 +56,91 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          hospital_department_id?: string | null
           id?: string
           name?: string | null
           national_id_no?: string | null
           role?: Database["public"]["Enums"]["user_role"]
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "accounts_hospital_department_id_fkey"
+            columns: ["hospital_department_id"]
+            isOneToOne: false
+            referencedRelation: "hospital_departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       appointments: {
         Row: {
           created_at: string
           date: string
+          department_id: string | null
+          diagnosis: string | null
           doctor_id: string
+          doctor_notes: string | null
+          final_diagnosis: string | null
+          hospital_id: string | null
           id: string
+          initial_symptoms: string | null
+          reason: string | null
           status: Database["public"]["Enums"]["appointment_status"]
+          updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
           date: string
+          department_id?: string | null
+          diagnosis?: string | null
           doctor_id: string
+          doctor_notes?: string | null
+          final_diagnosis?: string | null
+          hospital_id?: string | null
           id?: string
+          initial_symptoms?: string | null
+          reason?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
           date?: string
+          department_id?: string | null
+          diagnosis?: string | null
           doctor_id?: string
+          doctor_notes?: string | null
+          final_diagnosis?: string | null
+          hospital_id?: string | null
           id?: string
+          initial_symptoms?: string | null
+          reason?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
+            foreignKeyName: "appointments_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "hospital_departments"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "appointments_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
-            referencedRelation: "doctors"
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
             referencedColumns: ["id"]
           },
           {
@@ -99,38 +148,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "accounts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      doctors: {
-        Row: {
-          created_at: string
-          daily_capacity: number
-          hospital_department_id: string
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          daily_capacity?: number
-          hospital_department_id: string
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          daily_capacity?: number
-          hospital_department_id?: string
-          id?: string
-          name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "doctors_hospital_department_id_fkey"
-            columns: ["hospital_department_id"]
-            isOneToOne: false
-            referencedRelation: "hospital_departments"
             referencedColumns: ["id"]
           },
         ]
@@ -163,40 +180,229 @@ export type Database = {
       }
       hospitals: {
         Row: {
+          certificate_pem: string | null
           city: string | null
           contact_number: string
           created_at: string
           district: string | null
           email: string
+          encrypted_private_key: string | null
           id: string
           latitude: number
           longitude: number
           name: string
           province: string | null
+          public_key: string | null
         }
         Insert: {
+          certificate_pem?: string | null
           city?: string | null
           contact_number: string
           created_at?: string
           district?: string | null
           email: string
+          encrypted_private_key?: string | null
           id?: string
           latitude: number
           longitude: number
           name: string
           province?: string | null
+          public_key?: string | null
         }
         Update: {
+          certificate_pem?: string | null
           city?: string | null
           contact_number?: string
           created_at?: string
           district?: string | null
           email?: string
+          encrypted_private_key?: string | null
           id?: string
           latitude?: number
           longitude?: number
           name?: string
           province?: string | null
+          public_key?: string | null
+        }
+        Relationships: []
+      }
+      lab_report_items: {
+        Row: {
+          id: string
+          is_abnormal: boolean | null
+          lab_report_id: string
+          normal_range: string | null
+          result: string
+          test_name: string
+          unit: string | null
+        }
+        Insert: {
+          id?: string
+          is_abnormal?: boolean | null
+          lab_report_id: string
+          normal_range?: string | null
+          result: string
+          test_name: string
+          unit?: string | null
+        }
+        Update: {
+          id?: string
+          is_abnormal?: boolean | null
+          lab_report_id?: string
+          normal_range?: string | null
+          result?: string
+          test_name?: string
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_report_items_lab_report_id_fkey"
+            columns: ["lab_report_id"]
+            isOneToOne: false
+            referencedRelation: "lab_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lab_reports: {
+        Row: {
+          appointment_id: string
+          checked_by: string | null
+          created_at: string
+          created_by: string
+          file_url: string | null
+          id: string
+          notes: string | null
+          report_date: string
+          report_hash: string | null
+          report_name: string
+          report_type: Database["public"]["Enums"]["lab_report_type"]
+          signature: string | null
+          signer_hospital_id: string | null
+        }
+        Insert: {
+          appointment_id: string
+          checked_by?: string | null
+          created_at?: string
+          created_by: string
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          report_date?: string
+          report_hash?: string | null
+          report_name: string
+          report_type: Database["public"]["Enums"]["lab_report_type"]
+          signature?: string | null
+          signer_hospital_id?: string | null
+        }
+        Update: {
+          appointment_id?: string
+          checked_by?: string | null
+          created_at?: string
+          created_by?: string
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          report_date?: string
+          report_hash?: string | null
+          report_name?: string
+          report_type?: Database["public"]["Enums"]["lab_report_type"]
+          signature?: string | null
+          signer_hospital_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_reports_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_reports_checked_by_fkey"
+            columns: ["checked_by"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_reports_signer_hospital_id_fkey"
+            columns: ["signer_hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          dosage: string
+          duration: string | null
+          frequency: string
+          id: string
+          medicine_name: string
+          notes: string | null
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          dosage: string
+          duration?: string | null
+          frequency: string
+          id?: string
+          medicine_name: string
+          notes?: string | null
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          dosage?: string
+          duration?: string | null
+          frequency?: string
+          id?: string
+          medicine_name?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      system_keys: {
+        Row: {
+          created_at: string
+          encrypted_private_key: string
+          id: string
+          key_type: string
+          public_key: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_private_key: string
+          id?: string
+          key_type: string
+          public_key: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_private_key?: string
+          id?: string
+          key_type?: string
+          public_key?: string
         }
         Relationships: []
       }
@@ -214,7 +420,15 @@ export type Database = {
         | "cancelled"
         | "completed"
         | "deleted"
-      user_role: "citizen" | "provider" | "ministry"
+      lab_report_type:
+        | "blood_test"
+        | "urine_test"
+        | "xray"
+        | "ct_scan"
+        | "mri"
+        | "ultrasound"
+        | "other"
+      user_role: "citizen" | "provider" | "ministry" | "doctor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -352,7 +566,16 @@ export const Constants = {
         "completed",
         "deleted",
       ],
-      user_role: ["citizen", "provider", "ministry"],
+      lab_report_type: [
+        "blood_test",
+        "urine_test",
+        "xray",
+        "ct_scan",
+        "mri",
+        "ultrasound",
+        "other",
+      ],
+      user_role: ["citizen", "provider", "ministry", "doctor"],
     },
   },
 } as const

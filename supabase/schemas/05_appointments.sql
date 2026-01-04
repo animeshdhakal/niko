@@ -6,7 +6,12 @@ CREATE TABLE IF NOT EXISTS "public"."appointments" (
     "doctor_id" uuid NOT NULL REFERENCES "public"."doctors"("id") ON DELETE CASCADE,
     "date" timestamp NOT NULL,
     "status" appointment_status DEFAULT 'pending' NOT NULL,
-    "created_at" timestamp DEFAULT now() NOT NULL
+    "initial_symptoms" text,
+    "diagnosis" text,
+    "final_diagnosis" text,
+    "doctor_notes" text,
+    "created_at" timestamp DEFAULT now() NOT NULL,
+    "updated_at" timestamp DEFAULT now() NOT NULL
 );
 
 -- Enable Row Level Security
@@ -24,3 +29,23 @@ CREATE POLICY "create_own_appointments" ON "public"."appointments"
 CREATE POLICY "ministry_view_appointments" ON "public"."appointments"
     AS PERMISSIVE FOR SELECT TO authenticated
     USING (exists (select 1 from public.accounts where id = auth.uid() and role = 'ministry'));
+
+CREATE POLICY "provider_update_appointments" ON "public"."appointments"
+    AS PERMISSIVE FOR UPDATE TO authenticated
+    USING (exists (select 1 from public.accounts where id = auth.uid() and role = 'provider'));
+
+CREATE POLICY "doctor_view_own_appointments" ON "public"."appointments"
+    AS PERMISSIVE FOR SELECT TO authenticated
+    USING (exists (
+        select 1 from public.doctors d
+        where d.id = appointments.doctor_id
+        and d.account_id = auth.uid()
+    ));
+
+CREATE POLICY "doctor_update_own_appointments" ON "public"."appointments"
+    AS PERMISSIVE FOR UPDATE TO authenticated
+    USING (exists (
+        select 1 from public.doctors d
+        where d.id = appointments.doctor_id
+        and d.account_id = auth.uid()
+    ));

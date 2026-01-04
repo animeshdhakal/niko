@@ -3,11 +3,16 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { AppointmentDetailsDialog } from "@/components/appointments/appointment-details-dialog";
 
 export type Appointment = {
   id: string;
   date: string;
   status: "pending" | "confirmed" | "cancelled" | "completed" | "deleted";
+  initial_symptoms?: string | null;
+  diagnosis?: string | null;
+  final_diagnosis?: string | null;
+  doctor_notes?: string | null;
   doctor: {
     name: string;
     department: {
@@ -51,6 +56,8 @@ export const columns: ColumnDef<Appointment>[] = [
               ? "default"
               : status === "cancelled"
               ? "destructive"
+              : status === "completed"
+              ? "secondary"
               : "secondary"
           }
         >
@@ -59,4 +66,12 @@ export const columns: ColumnDef<Appointment>[] = [
       );
     },
   },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      return <AppointmentDetailsDialog appointmentId={row.original.id} />;
+    },
+  },
 ];
+

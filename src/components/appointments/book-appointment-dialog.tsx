@@ -54,7 +54,7 @@ export function BookAppointmentDialog({
   const [hospitalOpen, setHospitalOpen] = useState(false);
 
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
-  const [doctors, setDoctors] = useState<{ id: string; name: string; daily_capacity: number }[]>([]);
+  const [doctors, setDoctors] = useState<{ id: string; name: string | null }[]>([]);
 
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
@@ -227,7 +227,7 @@ export function BookAppointmentDialog({
               <SelectContent>
                 {doctors.map((doctor) => (
                   <SelectItem key={doctor.id} value={doctor.id}>
-                    {doctor.name} (Capacity: {doctor.daily_capacity}/day)
+                    {doctor.name || "Unknown Doctor"}
                   </SelectItem>
                 ))}
               </SelectContent>

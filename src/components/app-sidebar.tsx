@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, Settings, Building2, CalendarDays } from "lucide-react"
+import { Home, Building2, CalendarDays, Users, FileText } from "lucide-react"
 import Image from "next/image"
 
 import {
@@ -27,6 +27,15 @@ export function AppSidebar({ userRole }: { userRole: string }) {
       url: "/dashboard/appointments",
       icon: CalendarDays,
     },
+    ...(userRole === "doctor"
+      ? [
+          {
+            title: "Patients",
+            url: "/dashboard/patients",
+            icon: Users,
+          },
+        ]
+      : []),
     ...(userRole === "ministry"
       ? [
           {
@@ -37,9 +46,9 @@ export function AppSidebar({ userRole }: { userRole: string }) {
         ]
       : []),
     {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
+      title: "Lab Reports",
+      url: "/dashboard/lab-reports",
+      icon: FileText,
     },
   ];
 

@@ -13,7 +13,10 @@ export type Hospital = {
   district: string | null;
   city: string | null;
   created_at: string;
+  public_key: string | null;
 };
+
+import { HospitalIdentityManager } from "@/components/pki/hospital-identity-manager";
 
 export const columns: ColumnDef<Hospital>[] = [
   {
@@ -49,4 +52,17 @@ export const columns: ColumnDef<Hospital>[] = [
       return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     },
   },
+  {
+    id: "identity",
+    header: "Reference Identity",
+    cell: ({ row }) => {
+      return (
+        <HospitalIdentityManager
+          hospitalId={row.original.id}
+          hasIdentity={!!row.original.public_key}
+        />
+      );
+    },
+  },
 ];
+
