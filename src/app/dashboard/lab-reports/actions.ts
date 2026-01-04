@@ -18,11 +18,11 @@ export async function getLabReports() {
       lab_report_items(*),
       appointments (
         user_id,
-        users: user_id (
+        users: accounts!user_id (
           email
         )
       ),
-      creator: created_by (
+      creator: accounts!created_by (
         name
       )
     `

@@ -1,7 +1,14 @@
-"use client"
+"use client";
 
-import { Home, Building2, CalendarDays, Users, FileText } from "lucide-react"
-import Image from "next/image"
+import {
+  Home,
+  Building2,
+  CalendarDays,
+  Users,
+  FileText,
+  Activity,
+} from "lucide-react";
+import Image from "next/image";
 
 import {
   Sidebar,
@@ -13,7 +20,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export function AppSidebar({ userRole }: { userRole: string }) {
   const items = [
@@ -46,6 +53,11 @@ export function AppSidebar({ userRole }: { userRole: string }) {
         ]
       : []),
     {
+      title: "Niko Pulse",
+      url: "/dashboard/niko-pulse",
+      icon: Activity,
+    },
+    {
       title: "Lab Reports",
       url: "/dashboard/lab-reports",
       icon: FileText,
@@ -57,17 +69,19 @@ export function AppSidebar({ userRole }: { userRole: string }) {
       <SidebarHeader className="border-b px-4 py-4">
         <div className="flex items-center gap-3">
           <div className="relative h-12 w-12 shrink-0">
-             <Image
-               src="/nepal-emblem.svg"
-               alt="Nepal Govt Logo"
-               fill
-               className="object-contain"
-             />
+            <Image
+              src="/nepal-emblem.svg"
+              alt="Nepal Govt Logo"
+              fill
+              className="object-contain"
+            />
           </div>
           <div className="flex flex-col justify-center">
             <div className="flex items-baseline gap-1.5">
-                <span className="font-black text-2xl tracking-tighter text-slate-900 dark:text-white">NIKO</span>
-                <span className="font-bold text-2xl text-nepal-red">निको</span>
+              <span className="font-black text-2xl tracking-tighter text-slate-900 dark:text-white">
+                NIKO
+              </span>
+              <span className="font-bold text-2xl text-nepal-red">निको</span>
             </div>
           </div>
         </div>
@@ -92,5 +106,5 @@ export function AppSidebar({ userRole }: { userRole: string }) {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
