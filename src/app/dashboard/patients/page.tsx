@@ -3,6 +3,9 @@ import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { PatientDiagnosisDialog } from "@/components/patients/patient-diagnosis-dialog";
+import { EmergencyPatientDialog } from "@/components/security/emergency-patient-dialog";
+import { Button } from "@/components/ui/button";
+import { Siren } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { redirect } from "next/navigation";
 import { getSupabaseServerClient } from "@/lib/supabase/server-client";
@@ -11,7 +14,9 @@ export default async function PatientsPage(props: {
   searchParams: Promise<{ page?: string; pageSize?: string; status?: string }>;
 }) {
   const supabase = await getSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/login");
@@ -31,7 +36,12 @@ export default async function PatientsPage(props: {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
   const pageSize = Number(searchParams.pageSize) || 10;
-  const status = (searchParams.status || "all") as "all" | "pending" | "confirmed" | "cancelled" | "completed";
+  const status = (searchParams.status || "all") as
+    | "all"
+    | "pending"
+    | "confirmed"
+    | "cancelled"
+    | "completed";
 
   const { appointments, totalPages, totalCount } = await getDoctorAppointments({
     page,
@@ -48,6 +58,14 @@ export default async function PatientsPage(props: {
             View and manage your patient appointments.
           </p>
         </div>
+        <EmergencyPatientDialog
+          trigger={
+            <Button variant="destructive" className="gap-2">
+              <Siren className="w-4 h-4" />
+              Emergency Access
+            </Button>
+          }
+        />
       </div>
 
       <Tabs defaultValue={status} className="w-full">
@@ -74,7 +92,8 @@ export default async function PatientsPage(props: {
 
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="text-sm text-muted-foreground">
-              Showing {appointments.length} of {totalCount} appointments • Page {page} of {totalPages || 1}
+              Showing {appointments.length} of {totalCount} appointments • Page{" "}
+              {page} of {totalPages || 1}
             </div>
             <PaginationControls page={page} totalPages={totalPages} />
           </div>

@@ -56,17 +56,19 @@ export function AppSidebar({ userRole }: { userRole: string }) {
     <Sidebar>
       <SidebarHeader className="border-b px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="relative h-10 w-10 shrink-0">
+          <div className="relative h-12 w-12 shrink-0">
              <Image
-               src="https://upload.wikimedia.org/wikipedia/commons/2/23/Emblem_of_Nepal.svg"
+               src="/nepal-emblem.svg"
                alt="Nepal Govt Logo"
                fill
                className="object-contain"
              />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-lg">Niko</span>
-            <span className="text-xs text-muted-foreground font-medium">निको</span>
+          <div className="flex flex-col justify-center">
+            <div className="flex items-baseline gap-1.5">
+                <span className="font-black text-2xl tracking-tighter text-slate-900 dark:text-white">NIKO</span>
+                <span className="font-bold text-2xl text-nepal-red">निको</span>
+            </div>
           </div>
         </div>
       </SidebarHeader>

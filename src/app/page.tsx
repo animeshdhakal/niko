@@ -42,83 +42,13 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Portal Services Section - Professional "Lower Page" Design */}
-            <section className="py-24 md:py-32 px-4 bg-white dark:bg-slate-950 relative overflow-hidden">
-                <div className="container mx-auto max-w-7xl">
-                    <div className="text-center mb-20 space-y-4">
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white">
-                            Portal Services
-                        </h2>
-                        <div className="flex flex-col items-center gap-2">
-                            <p className="text-slate-400 dark:text-slate-600 uppercase tracking-[0.4em] text-[10px] md:text-xs font-black">
-                                विश्वसनीय सरकारी स्वास्थ्य सेवाहरू
-                            </p>
-                            <div className="w-24 h-1.5 bg-nepal-red rounded-full" />
-                        </div>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-10 md:gap-12">
-                        {/* Service Cards - Refined Professional Style */}
-                        {[
-                            {
-                                id: "01",
-                                title: "Citizens",
-                                subtitle: "नागरिक पोर्टल",
-                                features: [
-                                    { name: "Digital Health ID", desc: "Unique health identity" },
-                                    { name: "Medical Records", desc: "Access history safely" },
-                                    { name: "Appointments", desc: "Online scheduling" }
-                                ],
-                                color: "nepal-blue"
-                            },
-                            {
-                                id: "02",
-                                title: "Providers",
-                                subtitle: "स्वास्थ्यकर्मी पोर्टल",
-                                features: [
-                                    { name: "Clinical Manager", desc: "Patient record control" },
-                                    { name: "E-Prescriptions", desc: "Digital prescriptions" },
-                                    { name: "Lab Hub", desc: "Real-time results" }
-                                ],
-                                color: "nepal-blue"
-                            },
-                            {
-                                id: "03",
-                                title: "Ministry",
-                                subtitle: "मन्त्रालय पोर्टल",
-                                features: [
-                                    { name: "Epidemic Grid", desc: "Disease tracking" },
-                                    { name: "Health Analytics", desc: "Data driven policy" },
-                                    { name: "Resource Board", desc: "National monitoring" }
-                                ],
-                                color: "nepal-red"
-                            }
-                        ].map((portal) => (
-                            <div key={portal.id} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/50 p-10 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.15)] hover:shadow-[0_30px_80px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_30px_80px_rgba(0,0,0,0.2)] transition-all duration-500 flex flex-col group">
-                                <div className="text-sm font-black text-slate-200 dark:text-slate-800 mb-6 tracking-[0.4em]">{portal.id}</div>
-                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                                    {portal.title}
-                                </h3>
-                                <p className="text-[10px] font-bold text-nepal-blue dark:text-blue-400 uppercase tracking-widest mb-8">{portal.subtitle}</p>
-
-                                <ul className="space-y-6 mb-12 flex-1">
-                                    {portal.features.map((f, i) => (
-                                        <li key={i} className="flex flex-col gap-1">
-                                            <span className="text-base font-bold text-slate-800 dark:text-slate-200">{f.name}</span>
-                                            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{f.desc}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <Link href="/login" className="w-full">
-                                    <Button className={`w-full ${portal.color === 'nepal-red' ? 'bg-nepal-red hover:bg-red-700' : 'bg-nepal-blue hover:bg-nepal-blue-dark'} text-white h-14 text-sm font-black rounded-xl shadow-lg transition-all active:scale-95`}>
-                                        Open {portal.title} Portal
-                                    </Button>
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+            {/* Portal Services Section - Removed as per request, just Login */}
+            <section className="py-12 flex justify-center">
+                <Link href="/login">
+                    <Button size="lg" className="bg-nepal-red hover:bg-red-700 text-white font-bold text-lg px-12 py-6 rounded-xl shadow-lg transition-all active:scale-95">
+                        Login to Portal
+                    </Button>
+                </Link>
             </section>
 
             {/* Footer Section - Compact */}

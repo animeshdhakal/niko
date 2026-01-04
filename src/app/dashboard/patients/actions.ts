@@ -76,8 +76,29 @@ export async function getDoctorAppointments(
     throw new Error(error.message);
   }
 
+  // Get list of unique patient IDs from the appointments
+  const patientIds = Array.from(
+    new Set(data?.map((app) => app.patient?.id).filter(Boolean))
+  );
+
+  // Fetch active access grants for these patients
+  const { data: grants } = await supabase
+    .from("access_grants")
+    .select("patient_id")
+    .eq("doctor_id", user.id)
+    .in("patient_id", patientIds)
+    .gt("expires_at", new Date().toISOString());
+
+  const grantSet = new Set(grants?.map((g) => g.patient_id));
+
+  const appointmentsWithAccess =
+    data?.map((app) => ({
+      ...app,
+      hasAccess: grantSet.has(app.patient?.id),
+    })) || [];
+
   return {
-    appointments: data || [],
+    appointments: appointmentsWithAccess,
     totalPages,
     currentPage: page,
     totalCount: count || 0,
@@ -214,4 +235,72 @@ export async function updateAppointmentStatus(
 
   revalidatePath("/dashboard/patients");
   return { success: true };
+}
+
+const GetPatientLabReportsSchema = z.object({
+  patientId: z.string().uuid(),
+  page: z.coerce.number().min(1).default(1),
+  pageSize: z.coerce.number().min(1).default(10),
+});
+
+export async function getPatientLabReports(
+  input: z.input<typeof GetPatientLabReportsSchema>
+) {
+  const { patientId, page, pageSize } = GetPatientLabReportsSchema.parse(input);
+  const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Unauthorized");
+
+  // 1. Verify Doctor Access
+  const { data: grant } = await supabase
+    .from("access_grants")
+    .select("id")
+    .eq("doctor_id", user.id)
+    .eq("patient_id", patientId)
+    .gt("expires_at", new Date().toISOString())
+    .single();
+
+  if (!grant) {
+    throw new Error("Access denied. No active grant found for this patient.");
+  }
+
+  const offset = (page - 1) * pageSize;
+
+  // 2. Fetch Reports
+  // We filter by appointment's user_id
+  const { data, count, error } = await supabase
+    .from("lab_reports")
+    .select(
+      `
+      *,
+      lab_report_items(*),
+      creator: created_by (
+        name
+      ),
+      appointments!inner (
+        user_id,
+        users:accounts!appointments_user_id_fkey (
+          email
+        )
+      )
+    `,
+      { count: "exact" }
+    )
+    .eq("appointments.user_id", patientId)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + pageSize - 1);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return {
+    reports: data || [],
+    totalCount: count || 0,
+    totalPages: Math.ceil((count || 0) / pageSize),
+    currentPage: page,
+  };
 }

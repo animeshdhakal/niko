@@ -14,6 +14,7 @@ import {
 import { MoreHorizontal, CheckCircle, XCircle, Clock, Eye } from "lucide-react";
 import { updateAppointmentStatus } from "./actions";
 import { toast } from "sonner";
+import { RequestAccessButton } from "@/components/access/request-access-button";
 
 export type PatientAppointment = {
   id: string;
@@ -29,6 +30,7 @@ export type PatientAppointment = {
     email: string;
     national_id_no: string | null;
   } | null;
+  hasAccess?: boolean;
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
@@ -149,6 +151,34 @@ export const columns: ColumnDef<PatientAppointment>[] = [
         <span className="max-w-[200px] truncate block" title={symptoms}>
           {symptoms}
         </span>
+      );
+    },
+  },
+  {
+    id: "history",
+    header: "Patient History",
+    cell: ({ row }) => {
+      const patient = row.original.patient;
+      const hasAccess = row.original.hasAccess;
+
+
+      if (!patient) return <span className="text-muted-foreground">N/A</span>;
+
+      if (hasAccess) {
+        return (
+          <a href={`/dashboard/patients/${patient.id}/reports`}>
+             <Button size="sm" variant="outline" className="h-8 border-nepal-blue text-nepal-blue hover:bg-nepal-blue hover:text-white">
+                View Reports
+             </Button>
+          </a>
+        );
+      }
+
+      return (
+        <div className="flex items-center">
+            {/* Dynamic Import or Client Component for Request Button */}
+             <RequestAccessButton patientId={patient.id} />
+        </div>
       );
     },
   },
